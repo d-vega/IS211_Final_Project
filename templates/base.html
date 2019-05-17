@@ -35,24 +35,24 @@
   <header>
       {% block header %}FlaskPress{% endblock %}
   </header>
-  {% for message in get_flashed_messages() %}
-  <div class="flash" style="color: red;">{{ message }}</div>
-  {% endfor %}
-
     <div class="blog-masthead">
         <div class="container">
             <nav class="blog-nav">
-                <a class="blog-nav-item active" href="#">Home</a>
+                <a class="blog-nav-item active" href="/">Home</a>
                 <a class="blog-nav-item" href="#">New features</a>
                 <a class="blog-nav-item" href="#">Press</a>
                 <a class="blog-nav-item" href="#">New hires</a>
                 <a class="blog-nav-item" href="#">About</a>
-                <button type="button" class="btn btn-xs btn-default" style="float: right; position: relative; display: inline-block; margin: 10px;"><a href="#">Login</a></button>
+                <button type="button" class="btn btn-xs btn-default" style="float: right; position: relative; display: inline-block; margin: 10px;"><a href="/login">Login</a></button>
+                <button type="button" class="btn btn-xs btn-default" style="float: right; position: relative; display: inline-block; margin: 10px;"><a href="/register">Sign-up</a></button>
             </nav>
       </div>
   </div>
 
   {% block content %}
+    {% for message in get_flashed_messages() %}
+    <div class="flash" style="color: red;">{{ message }}</div>
+    {% endfor %}
   {% endblock %}
 </div>
 
