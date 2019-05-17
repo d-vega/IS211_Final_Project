@@ -32,16 +32,13 @@ def get_posts():
 
     for author in database.execute('SELECT author_id FROM blog_posts'):
         if author not in authors:
-            authors.append((author))
+            authors.append(author)
 
     for row in database.execute('SELECT post_id, title, post_content, '
                                 'date FROM blog_posts'):
         post_details.append(list(row))
 
-    for val in post_details:
-        finaldata = dict(zip(authors, list(post_details)))
-    print finaldata
-    print post_details
+    finaldata = dict(zip(authors, post_details))
     return finaldata
 
 
