@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+<div class="col-sm-8 blog-main">
+    <div id="loginform">
+        <form action="/register" method="post">
+            <input type="text" name="firstname" placeholder="First Name" required="required"></input>
+            <input type="text" name="lastname" placeholder="Last Name" required="required"></input>
+            <input type="text" name="email" placeholder="Email Address" required="required"></input>
+            <input type="password" name="password" placeholder="Password" required="required"></input>
+            <input type="submit" value="Register"></input>
+        </form>
+    </div>
+</div><!-- /.blog-main -->
+{% endblock %}

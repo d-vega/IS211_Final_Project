@@ -57,7 +57,7 @@ def dashboard():
     if 'logged_in' in session:
         return render_template('/cms/dashboard.html')
     else:
-        return render_template('auth/login.html')
+        return render_template('/auth/login.html')
 
 
 @app.route('/register',  methods=['GET', 'POST'])
@@ -70,24 +70,29 @@ def register():
         password = request.form['password']
         firstname = request.form['firstname']
         lastname = request.form['lastname']
-        error = None
+        message = None
         database = get_db()
 
         if not email:
-            error = 'Email is required.'
+            message = 'Email is required.'
         elif not password:
-            error = 'Password is required.'
+            message = 'Password is required.'
         elif database.execute('SELECT author_id FROM authors WHERE email = ?',(
                                email,)).fetchone() is not None:
-            error = 'User email {} is already registered.'.format(email)
+            message = 'User email {} is already registered.'.format(email)
 
-        if error is None:
+        if message is None:
+            message = "Registration successful!"
             database.execute(
                 'INSERT INTO authors (firstname, lastname, email, password)'
                 ' VALUES (?, ?, ?, ?)',
                 (firstname, lastname, email, generate_password_hash(password)))
             database.commit()
-        return redirect('/dashboard')
+            flash(message)
+            return redirect('/login')
+
+        flash(message)
+        return redirect('/register')
 
     elif request.method == 'GET':
         return render_template('auth/register.html')
@@ -120,7 +125,7 @@ def login():
             return redirect('/dashboard')
 
         flash(error)
-        return render_template('auth/login.html')
+        return render_template('/auth/login.html')
 
     if request.method == 'GET':
         return render_template('/auth/login.html')

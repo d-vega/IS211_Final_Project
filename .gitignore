@@ -1,2 +1,4 @@
 bootstrap_blog_sampl.html
 flaskpress.db
+templates/auth/login-old.html
+templates/auth/register-old.html
