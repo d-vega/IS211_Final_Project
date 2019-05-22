@@ -153,6 +153,20 @@ h6, .h6 {
 
 
 /*
+ * Tables
+ */
+.blog-table {
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.blog-table td, .blog-table th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+/*
  * Footer
  */
 

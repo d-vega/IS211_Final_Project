@@ -25,18 +25,25 @@ def get_db():
     return g.db
 
 
-def get_posts():
+def get_all_posts():
     authors = []
     post_details = []
     database = get_db()
 
     for author in database.execute('SELECT author_id FROM blog_posts'):
-        if author not in authors:
-            authors.append(author)
+        #if author not in authors:
+        for val in author:
+            if val in authors:
+                pass
+            else:
+                authors.append(val)
 
-    for row in database.execute('SELECT post_id, title, post_content, '
-                                'date FROM blog_posts'):
-        post_details.append(list(row))
+        for row in database.execute('SELECT blog_posts.post_id, blog_posts.title,'
+                                    ' blog_posts.post_content, blog_posts.date, '
+                                    'authors.firstname, authors.lastname FROM '
+                                    'blog_posts JOIN authors using (author_id) '
+                                    'WHERE author_id=?', author):
+            post_details.append(list(row))
 
     finaldata = dict(zip(authors, post_details))
     return finaldata
@@ -45,17 +52,18 @@ def get_posts():
 
 @app.route('/',  methods=['GET'])
 def home_pg():
-    #if 'logged_in' in session:
-    #    return redirect('/dashboard')
-    #else:
-    data = get_posts()
+    if 'logged_in' in session:
+        return redirect('/dashboard')
+    else:
+        data = get_all_posts()
     return render_template('cms/index.html', data=data)
 
 
 @app.route('/dashboard',  methods=['GET'])
 def dashboard():
+    data = get_all_posts()
     if 'logged_in' in session:
-        return render_template('/cms/dashboard.html')
+        return render_template('/cms/dashboard.html', data=data)
     else:
         return render_template('/auth/login.html')
 
@@ -129,6 +137,27 @@ def login():
 
     if request.method == 'GET':
         return render_template('/auth/login.html')
+
+@app.route('/edit/<path:post_id>', methods=['GET'])
+def edit_post(post_id):
+    postid = post_id
+    data = get_all_posts()
+    if 'logged_in' in session:
+        return render_template('/cms/edit.html', post_id=post_id, data=data)
+    else:
+        return redirect('/')
+
+
+@app.route('/delete/<path:post_id>', methods=['POST'])
+def delete_post(post_id):
+    database = get_db()
+    data = get_all_posts()
+    if 'logged_in' in session:
+        database.execute('DELETE FROM blog_posts WHERE post_id=?', id)
+        database.commit()
+        return render_template('/cms/edit.html', post_id=post_id, data=data)
+    else:
+        return redirect('/')
 
 
 if __name__ == '__main__':
