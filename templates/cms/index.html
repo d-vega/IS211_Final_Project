@@ -5,21 +5,24 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-sm-8 blog-main">
-  {% for value in data.values() | sort(attribute='3', reverse = True) %}
-  <div class="blog-post">
-    <h2 class="blog-post-title"><dd>{{ value.1 }}</dd></h2>
-    <p class="blog-post-meta">{{ value.3 }} by <a href="#">{{ value.4 }} {{value. 5 }}</a></p>
-    <p><dd>{{ value.2 }}</dd></p>
+<div width="100%" class="col-sm-8 blog-main">
+  {% for key, value in data.iteritems() %}
+      {% for v in value | sort(attribute='3', reverse = True) %}
+           <div class="blog-post">
+           <div class="blog-post">
+             <h2 class="blog-post-title"><dd>{{ v[1] }}</dd></h2>
+             <p class="blog-post-meta">{{ v[3] }} by <a href="#">{{ v[4] }} {{v[5] }}</a></p>
+             <p><dd>{{ v[2] }}</dd></p>
+           </div>
+      {% endfor %}
     {% endfor %}
-  </div>
-</div><!-- /.blog-post -->
-
-<nav>
-  <ul class="pager">
-    <li><a href="#">Previous</a></li>
-    <li><a href="#">Next</a></li>
-  </ul>
-</nav>
-</div><!-- /.blog-main -->
+  <nav>
+    <ul class="pager">
+      <li><a href="#">Previous</a></li>
+      <li><a href="#">Next</a></li>
+    </ul>
+  </nav>
+</div>
 {% endblock %}
+<!-- /.blog-post -->
+<!-- /.blog-main -->

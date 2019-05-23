@@ -6,19 +6,17 @@
 
 {% block content %}
 <div width="100%" class="col-sm-8 blog-main">
-  <h2>My Posts</h2>
-  <button type="button" class="btn btn-default" style="float: right; position: relative; display: inline-block; margin: 10px;"><a href="/create">Add new post</a></button>
-  <table class="blog-table">
-    <th>Post Title</th>
-    <th>Edit</th>
-    <th>Delete</th>
-    {% for value in data.values() | sort(attribute='3', reverse = True) %}
-    <tr>
-      <td>{{ value.1 }}</td>
-      <td>A thingy!</td>
-      <td>A thingy</td>
-    </tr>
-    {% endfor %}
+    <form method="post">
+    <label for="title">Title</label><BR>
+      {% for val in title %}
+          <input name="title" id="title" value="{{ val[0] }}" required><BR><BR>
+      {% endfor %}
+    <label for="body">Body</label>
+      {% for val in content %}
+           <textarea name="content" rows="300" cols="100" id="inputText" class="form-control" style="margin:5px; height:300px;">{{ val[0] }}</textarea>
+      {% endfor %}
+      <button type="submit" class="btn btn-default" style="float: right; position: relative; display: inline-block; margin: 10px;">Save</button>
+  </form>
   </table>
 </div><!-- /.blog-main -->
 {% endblock %}

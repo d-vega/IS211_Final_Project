@@ -28,24 +28,49 @@ def get_db():
 def get_all_posts():
     authors = []
     post_details = []
+    finaldata = {}
     database = get_db()
+    counter = 0
 
     for author in database.execute('SELECT author_id FROM blog_posts'):
-        #if author not in authors:
         for val in author:
-            if val in authors:
-                pass
-            else:
-                authors.append(val)
+            finaldata[val] = []
 
         for row in database.execute('SELECT blog_posts.post_id, blog_posts.title,'
                                     ' blog_posts.post_content, blog_posts.date, '
-                                    'authors.firstname, authors.lastname FROM '
+                                    'authors.firstname, authors.lastname,'
+                                    ' authors.author_id FROM '
                                     'blog_posts JOIN authors using (author_id) '
                                     'WHERE author_id=?', author):
-            post_details.append(list(row))
+            post_details.append(row)
 
-    finaldata = dict(zip(authors, post_details))
+            if post_details[counter][6] in finaldata:
+                finaldata[post_details[counter][6]].append(row)
+
+            counter += 1
+
+    return finaldata
+
+
+def get_user_posts(user_id):
+    author = user_id
+    post_details = []
+    finaldata = {}
+    finaldata[author] = []
+    database = get_db()
+    counter = 0
+
+    for row in database.execute('SELECT blog_posts.post_id, blog_posts.title,'
+                                ' blog_posts.post_content, blog_posts.date, '
+                                'authors.firstname, authors.lastname,'
+                                ' authors.author_id FROM '
+                                'blog_posts JOIN authors using (author_id) '
+                                'WHERE author_id=?', (author,)):
+        post_details.append(row)
+
+        if post_details[counter][6] in finaldata:
+            finaldata[post_details[counter][6]].append(row)
+        counter += 1
     return finaldata
 
 
@@ -61,8 +86,9 @@ def home_pg():
 
 @app.route('/dashboard',  methods=['GET'])
 def dashboard():
-    data = get_all_posts()
     if 'logged_in' in session:
+        user_id = session['user_id']
+        data = get_user_posts(user_id)
         return render_template('/cms/dashboard.html', data=data)
     else:
         return render_template('/auth/login.html')
@@ -138,26 +164,69 @@ def login():
     if request.method == 'GET':
         return render_template('/auth/login.html')
 
-@app.route('/edit/<path:post_id>', methods=['GET'])
+@app.route('/edit/<path:post_id>', methods=['GET', 'POST'])
 def edit_post(post_id):
     postid = post_id
-    data = get_all_posts()
-    if 'logged_in' in session:
-        return render_template('/cms/edit.html', post_id=post_id, data=data)
-    else:
-        return redirect('/')
-
-
-@app.route('/delete/<path:post_id>', methods=['POST'])
-def delete_post(post_id):
     database = get_db()
-    data = get_all_posts()
+    title = []
+    content = []
+    titles = database.execute('SELECT title FROM blog_posts WHERE'
+                             ' post_id=?', (postid,)).fetchone()
+    contents = database.execute('SELECT post_content FROM blog_posts '
+                               'WHERE post_id=?', (postid,)).fetchone()
+
+    title.append(titles)
+    content.append(contents)
+
     if 'logged_in' in session:
-        database.execute('DELETE FROM blog_posts WHERE post_id=?', id)
-        database.commit()
-        return render_template('/cms/edit.html', post_id=post_id, data=data)
+        if request.method == 'POST':
+            fin_title = request.form['title']
+            fin_contents = request.form['content']
+
+            database.execute('UPDATE blog_posts SET title=? , post_content=?'
+                             ' WHERE post_id=?', (fin_title, fin_contents, postid))
+            database.commit()
+            return redirect('/dashboard')
+        else:
+            return render_template('/cms/edit.html', title=title,
+                                   content=content)
     else:
         return redirect('/')
+
+
+@app.route('/delete', methods=['POST'])
+def delete_post():
+    database = get_db()
+    post_id = request.form['post_to_delete']
+    if 'logged_in' in session:
+        database.execute('DELETE FROM blog_posts WHERE post_id=?', post_id)
+        database.commit()
+        return redirect('/dashboard')
+    else:
+        return redirect('/')
+
+
+@app.route('/create', methods=['GET', 'POST'])
+def create_post():
+    if 'logged_in' in session:
+        if request.method == 'POST':
+            title = request.form['title']
+            content = request.form['content']
+            date = request.form['date']
+            database = get_db()
+            id = session['user_id']
+
+            database.execute('INSERT INTO blog_posts(title, post_content, date,'
+                             ' author_id) VALUES(?, ?, ?, ?)', (title, content,
+                                                                date, id))
+            database.commit()
+
+            return redirect('/dashboard')
+
+        elif request.method == 'GET':
+            return render_template('/cms/create.html')
+    else:
+        return redirect('/login')
 
 
 if __name__ == '__main__':

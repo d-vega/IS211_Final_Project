@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+<div width="100%" class="col-sm-8 blog-main">
+  <h2>Add New Post</h2>
+    <form class="form-signin" action="/create" method="post">
+        <input type="text" name="title" class="form-control" style="margin:5px;" placeholder="Title of post" required></input>
+        <input type="date" name="date" class="form-control" style="margin:5px;" placeholder="Select date" required></input>
+        <textarea name="content" rows="300" cols="100" id="inputText" class="form-control" style="margin:5px; height:300px;" placeholder="Content of post" required></textarea>
+        <button type="submit" class="btn btn-default" style="float: right; position: relative; display: inline-block; margin: 10px;">Create Post</button>
+    </form>
+</div><!-- /.blog-main -->
+{% endblock %}
