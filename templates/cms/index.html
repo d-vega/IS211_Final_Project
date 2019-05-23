@@ -9,7 +9,6 @@
   {% for key, value in data.iteritems() %}
       {% for v in value | sort(attribute='3', reverse = True) %}
            <div class="blog-post">
-           <div class="blog-post">
              <h2 class="blog-post-title"><dd>{{ v[1] }}</dd></h2>
              <p class="blog-post-meta">{{ v[3] }} by <a href="#">{{ v[4] }} {{v[5] }}</a></p>
              <p><dd>{{ v[2] }}</dd></p>
